@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
+using System;
 
 namespace AWSServerlessDesafioAcidLabs
 {
@@ -40,6 +42,16 @@ namespace AWSServerlessDesafioAcidLabs
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IAuth, Auth>();
 
+            services.AddSwaggerGen(options =>
+            {
+                var groupName = "v1";
+
+                options.SwaggerDoc(groupName, new OpenApiInfo
+                {
+                    Title = "Desafio Acid Labs",
+                    Version = groupName,
+                });
+            });
             services.AddControllers();
         }
 
@@ -49,8 +61,8 @@ namespace AWSServerlessDesafioAcidLabs
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                //app.UseSwagger();
-                //app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApi v1"));
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApi v1"));
             }
 
             app.UseHttpsRedirection();
