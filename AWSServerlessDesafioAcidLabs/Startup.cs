@@ -36,6 +36,13 @@ namespace AWSServerlessDesafioAcidLabs
                 RegionEndpoint = RegionEndpoint.USEast2
             };
             var client = new AmazonDynamoDBClient(credentials, config);
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+            });
             services.AddSingleton<IAmazonDynamoDB>(client);
             services.AddSingleton<IDynamoDBContext, DynamoDBContext>();
             services.AddScoped<IUserCRUD, UserCRUD>();
@@ -44,12 +51,9 @@ namespace AWSServerlessDesafioAcidLabs
 
             services.AddSwaggerGen(options =>
             {
-                var groupName = "v1";
-
-                options.SwaggerDoc(groupName, new OpenApiInfo
+                options.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "Desafio Acid Labs",
-                    Version = groupName,
+                    Title = "Desafio Acid Labs"
                 });
             });
             services.AddControllers();
@@ -64,6 +68,7 @@ namespace AWSServerlessDesafioAcidLabs
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApi v1"));
             }
+            app.UseCors("CorsPolicy");
 
             app.UseHttpsRedirection();
 

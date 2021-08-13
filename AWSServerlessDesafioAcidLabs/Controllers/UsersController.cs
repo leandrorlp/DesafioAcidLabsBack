@@ -20,18 +20,21 @@ namespace AWSServerlessDesafioAcidLabs.Controllers
             _users = users;
         }
 
+        [ProducesResponseType(typeof(List<Users>), 200)]
         [HttpGet]
         public async Task<IActionResult> Get()
         {
             return Ok(await _users.GetAllUsers());
         }
 
+        [ProducesResponseType(typeof(Users), 200)]
         [HttpGet("{id}")]
         public async Task<Users> Get(string id)
         {
             return await _users.GetUserById(id);
         }
 
+        [ProducesResponseType(typeof(string), 200)]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] Users value)
         {
@@ -42,19 +45,25 @@ namespace AWSServerlessDesafioAcidLabs.Controllers
                 return BadRequest();
             }
 
-            return Ok(result);
+            return Ok(new { result = result });
         }
 
-        [HttpPut()]
-        public async Task Put(Users value)
+
+        [HttpPost]
+        [Route("update")]
+        public async Task<IActionResult> Update(Users value)
         {
             await _users.UpdateUser(value);
+
+            return Ok(new { result = true });
         }
 
         [HttpDelete("{id}")]
-        public async Task Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
             await _users.RemoveUser(id);
+
+            return Ok();
         }
     }
 }

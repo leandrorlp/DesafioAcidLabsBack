@@ -36,7 +36,15 @@ namespace AWSServerlessDesafioAcidLabs.DB.Operations
 
         public async Task<List<Users>> GetAllUsers()
         {
-            return await _context.ScanAsync<Users>(new List<ScanCondition>()).GetRemainingAsync();
+            var result = await _context.ScanAsync<Users>(new List<ScanCondition>()).GetRemainingAsync();
+
+            return result.Select(x => new Users
+            {
+                Name = x.Name,
+                Active = x.Active,
+                Id = x.Id,
+                Username = x.Username
+            }).ToList();
         }
 
         public async Task<Users> GetUserById(string Id)
@@ -92,8 +100,14 @@ namespace AWSServerlessDesafioAcidLabs.DB.Operations
                 return;
             }
 
+            conditions = new List<ScanCondition>();
+
+            conditions.Add(new ScanCondition("Id", ScanOperator.Equal, new Guid(Id)));
+
+            result = await _context.ScanAsync<Users>(conditions).GetRemainingAsync();
+
             await _context
-                .DeleteAsync<Users>(Id);
+                .DeleteAsync<Users>(result.First());
         }
 
         public async Task UpdateUser(Users user)
@@ -104,7 +118,7 @@ namespace AWSServerlessDesafioAcidLabs.DB.Operations
             userDB.Active = user.Active;
             userDB.Name = user.Name;
             userDB.Password = user.Password;
-            userDB.RefreshToken = null;
+            userDB.RefreshToken = user.RefreshToken;
             userDB.Username = user.Username;
 
             await _context.SaveAsync(userDB);

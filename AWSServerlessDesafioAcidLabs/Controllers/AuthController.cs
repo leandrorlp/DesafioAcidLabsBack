@@ -18,6 +18,7 @@ namespace AWSServerlessDesafioAcidLabs.Controllers
             this.auth = auth;
         }
 
+        [ProducesResponseType(typeof(LoginResponse), 200)]
         [Route("login")]
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] LoginRequest req)
@@ -32,6 +33,7 @@ namespace AWSServerlessDesafioAcidLabs.Controllers
             return BadRequest();
         }
 
+        [ProducesResponseType(typeof(LoginResponse), 200)]
         [Route("refresh")]
         [HttpGet]
         public async Task<IActionResult> RefreshToken(string refresh)
